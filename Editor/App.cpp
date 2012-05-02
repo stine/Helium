@@ -39,7 +39,8 @@
 
 #include "GraphicsJobs/GraphicsJobs.h"
 
-#include "Graphics/GraphicsEnumRegistration.h"
+#include "Graphics/GraphicsCustomTypeRegistration.h"
+#include "Framework/FrameworkCustomTypeRegistration.h"
 
 #include "PcSupport/ConfigPc.h"
 #include "PcSupport/ObjectPreprocessor.h"
@@ -339,7 +340,7 @@ bool App::OnInit()
     m_InitializerStack.Push( RegisterEngineTypes, UnregisterEngineTypes );
     m_InitializerStack.Push( PreRegisterGraphicsTypes, PostRegisterGraphicsTypes );
     m_InitializerStack.Push( RegisterGraphicsTypes, UnregisterGraphicsTypes );
-    m_InitializerStack.Push( PreRegisterFrameworkTypesTypes, PostRegisterFrameworkTypes);
+    m_InitializerStack.Push( PreRegisterFrameworkTypes, PostRegisterFrameworkTypes);
     m_InitializerStack.Push( RegisterFrameworkTypes, UnregisterFrameworkTypes );
     m_InitializerStack.Push( RegisterPcSupportTypes, UnregisterPcSupportTypes );
     m_InitializerStack.Push( RegisterEditorSupportTypes, UnregisterEditorSupportTypes );

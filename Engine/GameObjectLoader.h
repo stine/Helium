@@ -69,6 +69,10 @@ namespace Helium
         static void DestroyStaticInstance();
         //@}
 
+        virtual void HACK_PostLink(GameObject *_game_object)
+        {
+        }
+
         static void HandleLinkDependency(GameObject &_outer, Helium::StrongPtr<GameObject> &_game_object_pointer, GameObjectPath &_path);
 
         static void FinalizeLink(GameObject *_game_object);

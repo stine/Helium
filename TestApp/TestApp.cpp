@@ -70,6 +70,11 @@ void TestComponentFour::PopulateComposite( Reflect::Composite& comp )
 int APIENTRY _tWinMain( HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR /*lpCmdLine*/, int nCmdShow )
 {
     HELIUM_TRACE_SET_LEVEL( TRACE_DEBUG );
+    Log::AddTraceFile(TXT("ObjectCreation.txt"), OBJECT_CREATION_STREAM /* | Log::Streams::Normal*/);
+
+    //tstring test_str(TXT("test"));
+    //Log::Print(TXT("test normal"));
+    //Log::PrintString(TXT("test\n"), OBJECT_CREATION_STREAM);
 
     Timer::StaticInitialize();
 

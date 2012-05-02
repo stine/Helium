@@ -19,6 +19,21 @@ using namespace Helium;
 
 HELIUM_IMPLEMENT_OBJECT( Material, Graphics, 0 );
 
+REFLECT_DEFINE_OBJECT( Helium::Material::PersistentResourceData );
+void Material::PersistentResourceData::PopulateComposite( Reflect::Composite& comp )
+{
+    // If these trip, then this struct needs to be updated. Having to do this hack because reflect does not support serializing
+    // c style arrays
+#pragma TODO("Support static arrays in reflect")
+    HELIUM_COMPILE_ASSERT(RShader::TYPE_MAX == 2);
+    HELIUM_COMPILE_ASSERT(RShader::TYPE_VERTEX == 0);
+    HELIUM_COMPILE_ASSERT(RShader::TYPE_PIXEL == 1);
+
+    comp.AddField( &Material::PersistentResourceData::m_shaderVariantIndexVertex,        TXT( "m_shaderVariantIndexVertex" ) );
+    comp.AddField( &Material::PersistentResourceData::m_shaderVariantIndexPixel,         TXT( "m_shaderVariantIndexPixel" ) );
+}
+
+
 /// Constructor.
 Material::Material()
 {
@@ -782,19 +797,4 @@ void Material::TextureParameter::PopulateComposite( Reflect::Composite& comp )
 {
     comp.AddField( &Material::TextureParameter::name,          TXT( "name" ) );
     comp.AddField( &Material::TextureParameter::value,         TXT( "value" ), 0, Reflect::GetClass<GameObjectPointerData>() );
-}
-
-
-REFLECT_DEFINE_OBJECT( Material::PersistentResourceData );
-void Material::PersistentResourceData::PopulateComposite( Reflect::Composite& comp )
-{
-    // If these trip, then this struct needs to be updated. Having to do this hack because reflect does not support serializing
-    // c style arrays
-#pragma TODO("Support static arrays in reflect")
-    HELIUM_COMPILE_ASSERT(RShader::TYPE_MAX == 2);
-    HELIUM_COMPILE_ASSERT(RShader::TYPE_VERTEX == 0);
-    HELIUM_COMPILE_ASSERT(RShader::TYPE_PIXEL == 1);
-
-    comp.AddField( &Material::PersistentResourceData::m_shaderVariantIndexVertex,        TXT( "m_shaderVariantIndexVertex" ) );
-    comp.AddField( &Material::PersistentResourceData::m_shaderVariantIndexPixel,         TXT( "m_shaderVariantIndexPixel" ) );
 }

@@ -15,6 +15,8 @@
 #include "Engine/Resource.h"
 #include "PcSupport/ObjectPreprocessor.h"
 #include "PcSupport/ArchivePackageLoader.h"
+#include "Framework/Mesh.h"
+#include "Foundation/Log.h"
 
 using namespace Helium;
 
@@ -216,4 +218,47 @@ bool ArchiveObjectLoader::CacheObject( GameObject* pObject, bool bEvictPlatformP
     }
 
     return bSuccess;
+}
+
+void Helium::ArchiveObjectLoader::HACK_PostLink( GameObject *_game_object )
+{
+    if (_game_object && 
+        _game_object->GetClass() && 
+        _game_object->GetClass()->IsType(Helium::Mesh::GetStaticType()))
+    {
+        Helium::Mesh *mesh = Reflect::AssertCast<Helium::Mesh>(_game_object);
+
+        if (mesh && mesh->GetMaterialCount() > 0)
+        {
+            tstringstream ss;
+            ss << TXT("Post link mesh material: ") << mesh->GetMaterial(0) << TXT("\n");
+            tstring str = ss.str();
+            Log::PrintString(str.c_str(), OBJECT_CREATION_STREAM);
+
+        }
+    }
+
+    if (_game_object && 
+        _game_object->GetClass() && 
+        _game_object->GetClass()->IsType(Helium::Material::GetStaticType()))
+    {
+        Helium::Material *material = Reflect::AssertCast<Helium::Material>(_game_object);
+
+        if (material)
+        {
+            tstringstream ss;
+            if (material->m_spShader.HasLinkIndex())
+            {
+                ss << TXT("Post link material shader: [LINK INDEX]\n");
+            }
+            else if (material->m_spShader.ReferencesObject())
+            {
+                ss << TXT("Post link material shader: ") << (material->m_spShader.ReferencesObject() ? material->m_spShader.Get() : 0) << TXT("\n");
+            }
+            tstring str = ss.str();
+            Log::PrintString(str.c_str(), OBJECT_CREATION_STREAM);
+
+        }
+
+    }
 }

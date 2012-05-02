@@ -511,9 +511,11 @@ namespace Helium
         {
             if (_pointer.HasLinkIndex())
             {
+                // All non-null game objects should be a link index and not a pointer
                 size_t link_index = _pointer.GetLinkIndex();
                 _pointer.ClearLinkIndex();
 
+                // There should definitely be an entry for this object
                 if( link_index >= m_LinkTable.GetSize() )
                 {
                     HELIUM_TRACE(
@@ -526,6 +528,8 @@ namespace Helium
                     return false;
                 }
 
+                // If the link index has a pointer, fill it in but don't decend into the object.. a linked in game object
+                // will run through its own link indices when it is linked (or it could already be linked)
                 GameObject* pObject = m_LinkTable[ link_index ].spObject;
                 if( pObject )
                 {
@@ -545,7 +549,8 @@ namespace Helium
 //                     {
 ////                             if (field->m_Flags & Reflect::FieldFlags::Share)
 ////                             {
-                            _pointer.Set(pObject);
+                            _pointer = m_LinkTable[ link_index ].spObject;
+                            return false;
 ////                             }
 ////                             else
 ////                             {
@@ -568,6 +573,7 @@ namespace Helium
                 }
             }
 
+            // Non game-objects should be followed in to get linked
             return true;
         }
 
@@ -617,20 +623,61 @@ bool GameObjectLoader::TickLink( LoadRequest* pRequest )
     }
 
     // Ready to link.
-    GameObject* pObject = pRequest->spObject;
+    GameObject* pObject = pRequest->spObject.Get();
     if( pObject )
     {
+        {
+            tstringstream ss;
+            ss << TXT("Linking ") << pObject->GetName() << " (" << pObject << ")\n";
+            tstring str = ss.str();
+            Log::PrintString(str.c_str(), OBJECT_CREATION_STREAM);
+        }
+        
+        HACK_PostLink(pObject);
+        for( size_t linkIndex = 0; linkIndex < linkTableSize; ++linkIndex )
+        {
+            LinkEntry& rLinkEntry = rLinkTable[ linkIndex ];
+            
+            tstringstream ss;
+            ss << TXT("    Linking ") << rLinkEntry.loadId << " ";
+            if (rLinkEntry.spObject.ReferencesObject())
+            {
+                ss << rLinkEntry.spObject->GetName() << " (" << rLinkEntry.spObject.Get()<< ")\n";
+            }
+            else
+            {
+                ss << "NULL\n";
+            }
+
+            tstring str = ss.str();
+            Log::PrintString(str.c_str(), OBJECT_CREATION_STREAM);
+
+        }
+
+//         if (pObject->GetClass()->IsType(Mesh::GetStaticType())
+//         {
+//             Material *material = Reflect::AssertCast<Material>(pObject);
+//         }
+
+        HACK_PostLink(pObject);
+
+
         uint32_t objectFlags = pObject->GetFlags();
         if( !( objectFlags & GameObject::FLAG_LINKED ) )
         {
             if( !( objectFlags & GameObject::FLAG_BROKEN ) )
             {
                 PopulateObjectFromLinkTable visitor(*pObject, rLinkTable);
+
+                //I suspect that during accept, when we try to link the pointer into
+                //the object, the Data object is mapped to a different place in memory than this object..
+                //i expect that after Accept() the m_spShader pointer is = link table value but it isn't
                 pObject->Accept(visitor);
             }
 
             pObject->SetFlags( GameObject::FLAG_LINKED );
         }
+        HACK_PostLink(pObject);
     }
 
     AtomicOrRelease( pRequest->stateFlags, LOAD_FLAG_LINKED );
@@ -674,6 +721,8 @@ bool GameObjectLoader::TickPrecache( LoadRequest* pRequest )
         // Perform any pre-precaching work (note that we don't precache anything for the default template object for
         // a given type).
         OnPrecacheReady( pObject, pRequest->pPackageLoader );
+
+       // Log::PrintString(TXT("Log1\n"), OBJECT_CREATION_STREAM);
 
         if( !pObject->GetAnyFlagSet( GameObject::FLAG_BROKEN ) &&
             !pObject->IsDefaultTemplate() &&

@@ -13,6 +13,7 @@
 #include "Engine/Package.h"
 #include "Engine/DirectSerializer.h"
 #include "Engine/DirectDeserializer.h"
+#include "Foundation/Log.h"
 
 using namespace Helium;
 
@@ -683,6 +684,13 @@ bool GameObject::CreateObject(
         rspObject.Release();
 
         return false;
+    }
+    
+    {
+        tstringstream ss;
+        ss << TXT("Creating object ") << pObject->GetName() << " (" << pObject << ")\n";
+        tstring str = ss.str();
+        Log::PrintString(str.c_str(), OBJECT_CREATION_STREAM);
     }
 
     return true;
