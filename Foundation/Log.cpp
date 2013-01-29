@@ -198,12 +198,11 @@ void Redirect(const tstring& fileName, const tchar_t* str, bool stampNewLine = t
             uint32_t min = time % 60; time -= currentTime.timezone; time /= 60;
             time += currentTime.dstflag ? 1 : 0;
             uint32_t hour = time % 24;
-
-            fprintf( f, "[%02d:%02d:%02d.%03d TID:%d] %s", hour, min, sec, milli, GetCurrentThreadId(), str );
+            fprintf( f, "[%02d:%02d:%02d.%03d TID:%d] %ls", hour, min, sec, milli, GetCurrentThreadId(), str );
         }
         else
         {
-            fprintf( f, "%s", str );
+            fprintf( f, "%ls", str );
         }
 
         fflush( f );

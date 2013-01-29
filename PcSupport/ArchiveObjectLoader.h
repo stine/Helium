@@ -40,6 +40,9 @@ namespace Helium
         //@{
         static bool InitializeStaticInstance();
         //@}
+        
+        virtual void HACK_PostLink(GameObject *_game_object);
+
 
     private:
         /// XML package loader map.

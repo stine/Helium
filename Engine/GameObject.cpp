@@ -7,6 +7,7 @@
 #include "Engine/DirectSerializer.h"
 #include "Engine/DirectDeserializer.h"
 #include "Engine/GameObjectPointerData.h"
+#include "Foundation/Log.h"
 
 REFLECT_DEFINE_OBJECT( Helium::GameObject )
 
@@ -677,6 +678,13 @@ bool GameObject::CreateObject(
         rspObject.Release();
 
         return false;
+    }
+    
+    {
+        tstringstream ss;
+        ss << TXT("Creating object ") << pObject->GetName() << " (" << pObject << ")\n";
+        tstring str = ss.str();
+        Log::PrintString(str.c_str(), OBJECT_CREATION_STREAM);
     }
 
     return true;

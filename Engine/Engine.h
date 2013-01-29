@@ -22,3 +22,5 @@
 #endif
 
 #endif  // HELIUM_ENGINE_ENGINE_H
+
+#define OBJECT_CREATION_STREAM (1<<5)

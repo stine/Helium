@@ -101,7 +101,7 @@ namespace Helium
         };
 
         /// Shader texture sampler parameter.
-        struct TextureParameter
+        struct HELIUM_GRAPHICS_API TextureParameter
         {
             REFLECT_DECLARE_BASE_STRUCTURE(Material::TextureParameter);
             static void PopulateComposite( Reflect::Composite& comp );
@@ -116,7 +116,7 @@ namespace Helium
         };
         
         /// Shader texture sampler parameter.
-        struct PersistentResourceData : public Reflect::Object
+        struct HELIUM_GRAPHICS_API PersistentResourceData : public Reflect::Object
         {
             REFLECT_DECLARE_OBJECT(Material::PersistentResourceData, Reflect::Object);
             static void PopulateComposite( Reflect::Composite& comp );
@@ -208,11 +208,12 @@ namespace Helium
         void SynchronizeShaderParameters();
 #endif
         //@}
-
+        
+        public:
+        ShaderPtr m_spShader;
     private:
         /// Material shader.
         //GameObjectPtr m_spShaderAsGameObject;
-        ShaderPtr m_spShader;
         PersistentResourceData m_persistentResourceData;
 
         /// Cached references to the specific shader variants used by this material.
